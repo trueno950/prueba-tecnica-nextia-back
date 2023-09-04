@@ -9,11 +9,10 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { throwException } from '../common/thrwoException.helper';
-import { Role } from '../common/roles.decorador';
 import { ForgotPassword, ResetPasswordDto } from './dto/reset-password.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
