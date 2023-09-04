@@ -34,12 +34,6 @@ export class EmailService {
   }
 
   async sendByTemplate(mail: Mail) {
-    console.log(
-      'sendByTemplate',
-      mail,
-      process.cwd() + '/dist/templates',
-      process.cwd(),
-    );
     await this._mailService.sendMail({
       to: mail.to,
       subject: mail.subject,

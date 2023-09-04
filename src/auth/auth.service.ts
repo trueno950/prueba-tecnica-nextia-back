@@ -40,7 +40,6 @@ export class AuthService {
       Object.assign(user, registerDto);
       return await this.usersRepository.saveUser(user);
     } catch (error) {
-      console.error(error);
       if (error.code === '23505') {
         throwException(HttpStatus.CONFLICT, 'Duplicate user');
       } else {
@@ -60,7 +59,6 @@ export class AuthService {
     }
 
     const resetToken = await this.generateResetToken(email);
-
     const mail: Mail = {
       to: user.email,
       subject: 'Restaurar Contraseña',
@@ -81,7 +79,7 @@ export class AuthService {
       throwException(HttpStatus.NOT_FOUND, 'User not found');
     }
 
-    if (this.isValidResetToken(token)) {
+    if (await this.isValidResetToken(token)) {
       throwException(
         HttpStatus.NOT_ACCEPTABLE,
         'User reset token is not valid',
@@ -111,12 +109,12 @@ export class AuthService {
       const payload = this.jwtService.verify(encodedToken);
 
       const currentTimestamp = Math.floor(Date.now() / 1000);
-      if (payload.exp && payload.exp < currentTimestamp) {
+      if (payload.exp && payload.exp > currentTimestamp) {
         return false;
       }
       return true;
     } catch (error) {
-      return false;
+      return true;
     }
   }
 }

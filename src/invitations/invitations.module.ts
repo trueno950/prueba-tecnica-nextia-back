@@ -5,10 +5,11 @@ import { InvitationsController } from './invitations.controller';
 import { InvitationsService } from './invitations.service';
 import { UsersRepository } from '../users/users.repository';
 import { User } from '../users/users.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Invitation, User])],
   controllers: [InvitationsController],
-  providers: [UsersRepository, InvitationsService],
+  providers: [UsersRepository, InvitationsService, JwtService],
 })
 export class InvitationsModule {}

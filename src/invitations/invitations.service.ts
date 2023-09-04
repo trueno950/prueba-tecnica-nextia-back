@@ -18,19 +18,23 @@ export class InvitationsService {
   async createInvitation(
     createInvitationDto: CreateInvitationDto,
   ): Promise<Invitation> {
-    const user = await this.usersRepository.findById(
-      createInvitationDto.userId,
-    );
+    try {
+      const user = await this.usersRepository.findById(
+        createInvitationDto.userId,
+      );
 
-    if (!user) {
-      throwException(HttpStatus.NOT_FOUND, 'User not found');
+      if (!user) {
+        throwException(HttpStatus.NOT_FOUND, 'User not found');
+      }
+      const invitation = new Invitation();
+      invitation.guestName = createInvitationDto.guestName;
+      invitation.entryDate = createInvitationDto.entryDate;
+      invitation.expirationDate = createInvitationDto.expirationDate;
+      invitation.user = user;
+      return this.invitationsRepository.save(invitation);
+    } catch (error) {
+      throwException(HttpStatus.INTERNAL_SERVER_ERROR, 'Server error');
     }
-    const invitation = new Invitation();
-    invitation.guestName = createInvitationDto.guestName;
-    invitation.entryDate = createInvitationDto.entryDate;
-    invitation.expirationDate = createInvitationDto.expirationDate;
-    invitation.user = user;
-    return this.invitationsRepository.save(invitation);
   }
 
   async getInvitations(
@@ -45,30 +49,34 @@ export class InvitationsService {
     totalItems: number;
     totalPages: number;
   }> {
-    const skip = (page - 1) * perPage;
-    const where = {
-      user: {
-        id: userId,
-      },
-    };
-
-    if (filter) {
-      where['guestName'] = ILike(`%${filter}%`);
-    }
-
-    const [invitations, totalItems] =
-      await this.invitationsRepository.findAndCount({
-        where,
-        order: {
-          [sort]: order,
+    try {
+      const skip = (page - 1) * perPage;
+      const where = {
+        user: {
+          id: userId,
         },
-        skip,
-        take: perPage,
-      });
+      };
 
-    const totalPages = Math.ceil(totalItems / perPage);
+      if (filter) {
+        where['guestName'] = ILike(`%${filter}%`);
+      }
 
-    return { invitations, totalItems, totalPages };
+      const [invitations, totalItems] =
+        await this.invitationsRepository.findAndCount({
+          where,
+          order: {
+            [sort]: order,
+          },
+          skip,
+          take: perPage,
+        });
+
+      const totalPages = Math.ceil(totalItems / perPage);
+
+      return { invitations, totalItems, totalPages };
+    } catch (error) {
+      throwException(HttpStatus.INTERNAL_SERVER_ERROR, 'Server error');
+    }
   }
 
   async getInvitationDetail(invitationId: number): Promise<Invitation> {
@@ -86,34 +94,42 @@ export class InvitationsService {
     invitationId: number,
     updateInvitationDto: UpdateInvitationDto,
   ): Promise<Object> {
-    const existInvitation = await this.invitationsRepository.findOne({
-      where: {
-        id: invitationId,
-      },
-    });
+    try {
+      const existInvitation = await this.invitationsRepository.findOne({
+        where: {
+          id: invitationId,
+        },
+      });
 
-    if (!existInvitation) {
+      if (!existInvitation) {
+        throwException(HttpStatus.NOT_FOUND, 'Invitation not found');
+      }
+      const invitation = new Invitation();
+      invitation.guestName = updateInvitationDto.guestName;
+      invitation.entryDate = updateInvitationDto.entryDate;
+      invitation.expirationDate = updateInvitationDto.expirationDate;
+
+      return this.invitationsRepository.update(invitationId, invitation);
+    } catch (error) {
       throwException(HttpStatus.NOT_FOUND, 'Invitation not found');
     }
-    const invitation = new Invitation();
-    invitation.guestName = updateInvitationDto.guestName;
-    invitation.entryDate = updateInvitationDto.entryDate;
-    invitation.expirationDate = updateInvitationDto.expirationDate;
-
-    return this.invitationsRepository.update(invitationId, invitation);
   }
 
   async deleteInvitation(invitationId: number): Promise<Object> {
-    const existInvitation = await this.invitationsRepository.findOne({
-      where: {
-        id: invitationId,
-      },
-    });
+    try {
+      const existInvitation = await this.invitationsRepository.findOne({
+        where: {
+          id: invitationId,
+        },
+      });
 
-    if (!existInvitation) {
+      if (!existInvitation) {
+        throwException(HttpStatus.NOT_FOUND, 'Invitation not found');
+      }
+
+      return this.invitationsRepository.delete(invitationId);
+    } catch (error) {
       throwException(HttpStatus.NOT_FOUND, 'Invitation not found');
     }
-
-    return this.invitationsRepository.delete(invitationId);
   }
 }
