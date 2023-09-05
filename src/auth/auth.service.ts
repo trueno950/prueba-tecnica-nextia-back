@@ -72,7 +72,11 @@ export class AuthService {
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<void> {
-    const { email, token, newPassword } = resetPasswordDto;
+    const { token, newPassword } = resetPasswordDto;
+    const email = await this.getEmail(token);
+    if (!email) {
+      throwException(HttpStatus.NOT_FOUND, 'Email not found');
+    }
     const user = await this.usersRepository.getUserByEmail(email);
 
     if (!user) {
@@ -100,7 +104,6 @@ export class AuthService {
     };
 
     const resetToken = this.jwtService.sign(payload, tokenOptions);
-
     return resetToken;
   }
 
@@ -115,6 +118,18 @@ export class AuthService {
       return true;
     } catch (error) {
       return true;
+    }
+  }
+
+  async getEmail(encodedToken: string): Promise<string> {
+    try {
+      const payload = this.jwtService.verify(encodedToken);
+      if (payload.email) {
+        return payload.email;
+      }
+      return '';
+    } catch (error) {
+      return '';
     }
   }
 }

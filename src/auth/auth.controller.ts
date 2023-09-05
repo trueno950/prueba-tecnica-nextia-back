@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Patch,
   Body,
   Res,
   HttpStatus,
@@ -40,7 +41,7 @@ export class AuthController {
     res.status(HttpStatus.OK).json({ message: 'Password reset token sent' });
   }
 
-  @Post('reset-password')
+  @Patch('reset-password')
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
     @Res() res,

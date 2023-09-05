@@ -6,11 +6,7 @@ export class ForgotPassword {
   email: string;
 }
 
-export class ResetPasswordDto {
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-  
+export class ResetPasswordDto {  
   @IsNotEmpty()
   token: string;
 
