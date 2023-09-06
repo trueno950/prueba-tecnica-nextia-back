@@ -7,7 +7,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import ormconfig from '../orm.config';
 import { EmailModule } from './mail/email.module';
-
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
