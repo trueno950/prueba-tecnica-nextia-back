@@ -64,7 +64,7 @@ export class AuthService {
       subject: 'Restaurar Contraseña',
       emailData: {
         firstName: user.firstName,
-        url: `www.google.com`,
+        url: `${process.env.DB_BASE_URL_FRONT}/auth/accounts/${resetToken}`,
       },
       templateId: './confirmation.hbs',
     };
