@@ -8,7 +8,7 @@ const config: DataSourceOptions = {
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || '1234',
   url: process.env.DB_URL || '',
-  database: process.env.DB_DATABASE || 'nextia_main_db',
+  database: process.env.DB_DATABASE || 'inssoft_main_db',
   ssl: process.env.DB_SSL === 'true',
   extra: {
     ssl:
